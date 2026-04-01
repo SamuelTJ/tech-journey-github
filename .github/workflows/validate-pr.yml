@@ -1,0 +1,70 @@
+name: "Step 6 Check: Pull Request"
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches:
+      - main
+
+jobs:
+  check-pr:
+    name: "Verify PR is set up correctly"
+    runs-on: ubuntu-latest
+    # Skip this check on the source/template repo itself
+    if: github.repository != 'OWNER/techjourney-github'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Check source branch
+        run: |
+          HEAD="${{ github.head_ref }}"
+          echo "PR source branch: $HEAD"
+          if [ "$HEAD" != "add-about-me" ]; then
+            echo "::notice::Your PR is from branch '$HEAD', not 'add-about-me'."
+            echo "This is fine if you named your branch differently in Step 3."
+          else
+            echo "Source branch is correct!"
+          fi
+
+      - name: Check about-me file is in PR
+        run: |
+          echo "Looking for exercises/about-me.md in this PR..."
+          if [ ! -f "exercises/about-me.md" ]; then
+            echo "::error title=Missing File::exercises/about-me.md is not present in this PR."
+            echo ""
+            echo "Make sure you:"
+            echo "  1. Created exercises/about-me.md on your branch"
+            echo "  2. Committed and pushed the file"
+            echo "  3. Opened the PR from your 'add-about-me' branch"
+            echo ""
+            echo "Re-read steps/04-add-stage.md and steps/06-push.md if you need a reminder."
+            exit 1
+          fi
+          echo "exercises/about-me.md is included in this PR!"
+
+      - name: Check PR description has checklist items checked
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          echo "Checking that you filled out the PR checklist..."
+          if echo "$PR_BODY" | grep -q "\- \[x\]"; then
+            echo "Checklist items are checked off - great job!"
+          else
+            echo "::warning title=Checklist::It looks like you have not checked off any items in the PR description."
+            echo ""
+            echo "Go back to your Pull Request, click 'Edit' on the description,"
+            echo "and check the boxes for each step you completed."
+            echo "Change '- [ ]' to '- [x]' for each completed step."
+          fi
+
+      - name: Final success message
+        run: |
+          echo "=========================================="
+          echo "  PR validation complete!"
+          echo ""
+          echo "  Your instructor will review your work."
+          echo "  You have completed the TechJourney"
+          echo "  Git and GitHub curriculum!"
+          echo "=========================================="

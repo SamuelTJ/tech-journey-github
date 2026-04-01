@@ -1,0 +1,34 @@
+name: "Step 3 Check: Branch Created"
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  check-branch-name:
+    name: "Verify branch is named 'add-about-me'"
+    runs-on: ubuntu-latest
+    # Skip this check on the source/template repo itself
+    if: github.repository != 'OWNER/techjourney-github'
+    steps:
+      - name: Check branch name
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          echo "Your branch name: $BRANCH"
+          echo ""
+          if [ "$BRANCH" = "add-about-me" ]; then
+            echo "Branch name is correct!"
+            echo ""
+            echo "Head to Step 4 to create your about-me.md file:"
+            echo "  steps/04-add-stage.md"
+          else
+            echo "::notice title=Branch Name::Your branch is named '$BRANCH'."
+            echo "Step 3 asks you to name it exactly 'add-about-me'."
+            echo ""
+            echo "This is a notice, not a failure. You can continue,"
+            echo "but the Steps 4-6 check only runs on the 'add-about-me' branch."
+            echo "Consider recreating your branch with the correct name:"
+            echo "  git checkout main"
+            echo "  git checkout -b add-about-me"
+          fi

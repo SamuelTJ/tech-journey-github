@@ -1,0 +1,87 @@
+name: "Steps 4-5 Check: Create File, Commit, and Push"
+
+on:
+  push:
+    branches:
+      - add-about-me
+
+jobs:
+  check-file-exists:
+    name: "Check: exercises/about-me.md exists"
+    runs-on: ubuntu-latest
+    # Skip this check on the source/template repo itself
+    if: github.repository != 'OWNER/techjourney-github'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify file exists
+        run: |
+          echo "Looking for: exercises/about-me.md"
+          echo ""
+          if [ ! -f "exercises/about-me.md" ]; then
+            echo "::error title=Missing File::exercises/about-me.md was not found."
+            echo ""
+            echo "Make sure you completed all of these steps:"
+            echo "  1. Created a file at exactly: exercises/about-me.md"
+            echo "  2. Staged it:   git add exercises/about-me.md"
+            echo "  3. Committed it: git commit -m 'Add about-me file'"
+            echo "  4. Pushed it:   git push origin add-about-me"
+            echo ""
+            echo "Re-read steps/04-add-stage.md if you need a reminder."
+            exit 1
+          fi
+          echo "exercises/about-me.md found!"
+
+  check-file-content:
+    name: "Check: about-me.md has required content"
+    runs-on: ubuntu-latest
+    needs: check-file-exists
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify heading exists
+        run: |
+          echo "Checking for '## About Me' heading..."
+          if ! grep -q "## About Me" "exercises/about-me.md"; then
+            echo "::error title=Missing Heading::Your about-me.md is missing the '## About Me' heading."
+            echo ""
+            echo "Open your exercises/about-me.md file and make sure it contains:"
+            echo "  ## About Me"
+            echo ""
+            echo "Copy from the template if you need help: exercises/about-me-template.md"
+            exit 1
+          fi
+          echo "Heading found!"
+
+      - name: Verify file has enough content
+        run: |
+          echo "Checking that your file has enough content..."
+          # Count non-empty lines (works consistently across Mac/Windows line endings)
+          LINE_COUNT=$(grep -c . exercises/about-me.md || true)
+          echo "Non-empty lines found: $LINE_COUNT"
+          if [ "$LINE_COUNT" -lt 3 ]; then
+            echo "::error title=Too Short::Your about-me.md has fewer than 3 lines of content."
+            echo ""
+            echo "Add more content about yourself! Tell us:"
+            echo "  - Why you joined TechJourney"
+            echo "  - Something you are interested in"
+            echo "  - What you hope to learn"
+            exit 1
+          fi
+          echo "Content check passed!"
+
+  all-checks-passed:
+    name: "All Steps 4-6 checks passed!"
+    runs-on: ubuntu-latest
+    needs: [check-file-exists, check-file-content]
+    steps:
+      - name: Success
+        run: |
+          echo "=========================================="
+          echo "  You completed Steps 4, 5, and 6!"
+          echo ""
+          echo "  Your file is on GitHub."
+          echo ""
+          echo "  Head to Step 7 to open a Pull Request:"
+          echo "  steps/07-pull-request.md"
+          echo "=========================================="
