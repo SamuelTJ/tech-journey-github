@@ -68,7 +68,7 @@
       <!-- ▼▼▼ START EDITING HERE ▼▼▼ -->
 
       <h1 class="text-4xl font-extrabold text-gray-900">
-        Hi, I'm [Your Name] <span class="inline-block">👋</span>
+        Hi, I'm Sam <span class="inline-block">👋</span>
       </h1>
       <p class="text-lg text-gray-500 mt-1">
         A future developer learning Git, GitHub, and Copilot.
@@ -78,17 +78,17 @@
         About Me
       </h2>
       <p class="mt-3 text-gray-700">
-        Write a sentence or two about yourself here. What school do you go to?
-        What got you interested in tech?
+        I'm in 11th grade and I joined Tech Journey to learn more about technologies. 
+        I'm excited to explore coding and see what I can build!
       </p>
 
       <h2 class="text-2xl font-semibold mt-8 pb-1 border-b-4 border-purple-400">
         Things I'm Into
       </h2>
       <ul class="mt-3 space-y-1 text-gray-700 list-disc list-inside">
-        <li>Change these to your own interests</li>
-        <li>Video games, art, sports, music — anything!</li>
-        <li>Add or remove list items as you like</li>
+        <li>Card games</li>
+        <li>Video games</li>
+        <li>Board games</li>
       </ul>
 
       <h2 class="text-2xl font-semibold mt-8 pb-1 border-b-4 border-purple-400">
@@ -96,7 +96,8 @@
       </h2>
       <p class="mt-3 text-gray-700">
         Right now I'm learning how developers build and share software with
-        GitHub. This page is proof — I wrote it and published it myself!
+        GitHub. I'm especially excited about learning Fusion and exploring new technologies!
+        This page is proof — I wrote it and published it myself!
       </p>
 
       <!--
@@ -104,15 +105,18 @@
         x-data gives this box a tiny bit of "memory" (waves),
         @click runs code when clicked, and x-text shows a value.
       -->
-      <div x-data="{ waves: 0 }" class="mt-8">
+      <div x-data="{ 
+        donations: localStorage.getItem('donations') ? parseInt(localStorage.getItem('donations')) : 0,
+        addDonation() { this.donations++; localStorage.setItem('donations', this.donations); }
+      }" class="mt-8">
         <button
-          @click="waves++"
+          @click="addDonation()"
           class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-2 rounded-lg shadow transition"
         >
-          <i class="fa-solid fa-hand"></i> Wave at me
+          <i class="fa-solid fa-heart"></i> Click to Donate
         </button>
-        <span x-show="waves > 0" class="ml-3 text-gray-600">
-          Thanks for the <span x-text="waves"></span> wave(s)! 👋
+        <span x-show="donations > 0" class="ml-3 text-gray-600">
+          Thanks for the <span x-text="donations"></span> donation(s)! 💜
         </span>
       </div>
 
